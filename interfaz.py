@@ -132,59 +132,61 @@ class Main():
             messagebox.showerror(message="No image loaded", title="ERROR")
         else:
             if(self.segmentation_method.get()=="Thresholdind"):
-                 self.ax.imshow(thres(self.data,1, 150)[:, :, 100]) 
-                # self.tolerance = tk.StringVar(self.window)
-                # self.tolerance.set(1)
-                # self.taoo = tk.StringVar(self.window)
-                # self.taoo.set(150)
-                # l_tao = tk.Label(self.window, text="Tao", fg="white", bg="#000000", font=self.bigFont1)
-                # l_tol = tk.Label(self.window, text="Tolerance", fg="white", bg="#000000", font=self.bigFont1)
-                # self.tol_text = ttk.Spinbox(from_=20, to=150, increment=10, textvariable=self.tolerance, command=self.tol)
-                # self.tao_text = ttk.Spinbox(from_=20, to=150, increment=10, textvariable=self.taoo, command=self.tao)
 
-                # self.tol_text.place(x=800, y=320, width=100, height=25)
-                # self.tao_text.place(x=800, y=280, width=100, height=25)
-
-                # l_tao.place(x=700, y=280)
-                # l_tol.place(x=700, y=320)
+                self.img_boton2 = tk.PhotoImage(file="play.png")
+                self.entryTao = tk.Entry(justify="center", fg="white", bg="#000000")
+                self.entryTao.insert(0, "110")
+                self.entryTolerance = tk.Entry(justify="center", fg="white", bg="#000000")
+                self.entryTolerance.insert(0, "1")
+                self.btn = tk.Button(self.window, image=self.img_boton2, bg="#000000", borderwidth=0, command= lambda: self.segm("Thresholdind"))
+                l_tao = tk.Label(self.window, text="Tao", fg="white", bg="#000000", font=self.bigFont2)
+                l_tol = tk.Label(self.window, text="Tolerance", fg="white", bg="#000000", font=self.bigFont2)
+           
+                self.btn.place(x=910, y= 290)
+                self.entryTolerance.place(x=780, y=320, width=100, height=25)
+                self.entryTao.place(x=780, y=280, width=100, height=25)
+                l_tao.place(x=700, y=280)
+                l_tol.place(x=700, y=320)
 
                 
 
             elif(self.segmentation_method.get()=="K-means"):
-                self.ax.imshow(k_means(self.data,1, 150)[:, :, 100])
+                self.img_boton2 = tk.PhotoImage(file="play.png")
+                self.entryTao = tk.Entry(justify="center", fg="white", bg="#000000")
+                self.entryTao.insert(0, "110")
+                self.entryTolerance = tk.Entry(justify="center", fg="white", bg="#000000")
+                self.entryTolerance.insert(0, "1")
+                self.btn = tk.Button(self.window, image=self.img_boton2, bg="#000000", borderwidth=0, command= lambda: self.segm("K-means"))
+                l_tao = tk.Label(self.window, text="Tao", fg="white", bg="#000000", font=self.bigFont2)
+                l_tol = tk.Label(self.window, text="Tolerance", fg="white", bg="#000000", font=self.bigFont2)
+           
+                self.btn.place(x=910, y= 290)
+                self.entryTolerance.place(x=780, y=320, width=100, height=25)
+                self.entryTao.place(x=780, y=280, width=100, height=25)
+                l_tao.place(x=700, y=280)
+                l_tol.place(x=700, y=320)
 
-            elif(self.segmentation_method.get()=="z"):
-                x = self.data.shape[2] - 1
-            self.canvas_widget.draw()
+            elif(self.segmentation_method.get()=="Region Growing"):
+                messagebox.showerror(message="Not yet", title="ERROR")
+           
+    def segm(self, type):
+         if type=="Thresholdind":
+            self.data = self.img.get_fdata()
+            self.ax.imshow(thres(self.data,int(self.entryTolerance.get()), int(self.entryTao.get()))[:, :, 20])
+         if type=="K-means":
+            self.data = self.img.get_fdata()
+            self.ax.imshow(k_means(self.data,int(self.entryTolerance.get()), int(self.entryTao.get()))[:, :, 20]) 
+         self.canvas_widget.draw()
 
-    def tol(self, *args):
-        if(self.tol_text.get()):
-            self.tolerance = int(self.tol_text.get()[:2])
-            if(self.taoo!=150):
-                    print("cccc")
-                    
-                    img_boton_play = tk.PhotoImage(file="play.png")
-                    boton_play = tk.Button(self.window, image=img_boton_play, bg="#000000", borderwidth=0, command=lambda: thres(self.data, self.tolerance.get(), self.taoo.get()))
-                    boton_play.place(x=700, y=320)
-            return self.tolerance
-
-    def tao(self, *args):
-        if(self.tao_text.get()):
-            self.taoo = int(self.tao_text.get())
-            if(self.tolerance!=1):
-                    print("cccc")
-                    
-                    img_boton_play = tk.PhotoImage(file="play.png")
-                    boton_play = tk.Button(self.window, image=img_boton_play, bg="#000000", borderwidth=0, command=lambda: thres(self.data, self.tolerance.get(), self.taoo.get()))
-                    boton_play.place(x=700, y=320)
-            return self.taoo
+    
         
     def plot(self, *args ):
             self.canvas.delete("all")
             
             if(self.Axis.get()=="x"):
                     self.ax.imshow(self.data[int(self.var_ax.get()),:,:])
-                
+                    
+            
             if(self.Axis.get()=="y"):
                     self.ax.imshow(self.data[:,int(self.var_ax.get()),:])
                     
