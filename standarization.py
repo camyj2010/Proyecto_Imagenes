@@ -14,7 +14,6 @@ from Standarization_Algorithm.white_stripe import White_stripe
 from Standarization_Algorithm.histogram_matching import histogram_matching
 from Denoise_Algorithm.mean_filter import Mean_Filter
 from Denoise_Algorithm.median_filter import Median_filter
-# from median_filter import Median_filter
 from Denoise_Algorithm.median_filter_borders import Median_filter_borders
 
 import customtkinter
@@ -39,7 +38,7 @@ class Standarization():
     
         # Menu para estandarizar
         self.standarization_frame = tk.Frame(self.window, bg="#000000")
-        options_list = ["Rescaling", "Z-score", "Histogram Matching", "White Stripe"]
+        options_list = ["Rescaling", "Z-score", "Histogram Matching", "White Stripe" ]
         self.standarization_frame_standarization_method = tk.StringVar(self.standarization_frame)
         self.standarization_frame_standarization_method.set("Select an Option")
         self.standarization_frame_l_algorimt = tk.Label(self.standarization_frame, text="Standarization", fg="white", bg="#000000", font=self.bigFont2)

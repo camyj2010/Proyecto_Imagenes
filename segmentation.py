@@ -10,7 +10,15 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from Segmentation_Algorithm.thresholdind import thres
 from Segmentation_Algorithm.kMeans import k_means
 from Segmentation_Algorithm.region_growing import RegionGrowing
+from Segmentation_Algorithm.gmm import gaussianMixture
 from Border_Algorithm.Border import border_magnitude
+from Standarization_Algorithm.rescaling import Rescaling
+from Standarization_Algorithm.z_score import Z_score
+from Standarization_Algorithm.white_stripe import White_stripe
+from Standarization_Algorithm.histogram_matching import histogram_matching
+from Denoise_Algorithm.mean_filter import Mean_Filter
+from Denoise_Algorithm.median_filter import Median_filter
+from Denoise_Algorithm.median_filter_borders import Median_filter_borders
 import customtkinter
 
 
@@ -41,7 +49,7 @@ class Segmentation():
         ax_menu = tk.OptionMenu(self.segmentation_frame, self.Axis, *self.ax_list, command=self.display_selected)
         ax_menu.place(x=50, y=100)
         l_ax.place(x=0, y=100)
-        options_list = ["Thresholdind", "K-means","Region Growing"]
+        options_list = ["Thresholdind", "K-means","Region Growing", "Gaussian mixture"]
         self.segmentation_method = tk.StringVar(self.window)
         self.segmentation_method.set("Select an Option")
         l_algorimt = tk.Label(self.segmentation_frame, text="Segmentation", fg="white", bg="#000000", font=self.bigFont2)
@@ -59,7 +67,7 @@ class Segmentation():
         
         if self.segmentation_method.get() == "Thresholdind":
             if self.k_means_frame is not None:
-                widgets = [self.k_means_frame_entryK, self.k_means_frame_l_k,self.button_Bordes,self.button]
+                widgets = [self.k_means_frame_entryK, self.k_means_frame_l_k,self.button_Bordes,self.button,self.k_means_frame_LIt,self.k_means_frame_It]
                 for widget in widgets:
                     widget.destroy()
                 self.k_means_frame.destroy()
@@ -118,16 +126,19 @@ class Segmentation():
                 self.k_means_frame_img_boton2 = tk.PhotoImage(file="play.png")
                 self.k_means_frame_l_k = tk.Label(self.k_means_frame, text="K", fg="white", bg="#000000", font=self.bigFont2)
                 self.k_means_frame_entryK = tk.Entry(self.k_means_frame,justify="center", fg="white", bg="#000000")
-                self.k_means_frame_entryK.insert(0, "3")
+                self.k_means_frame_entryK.insert(0, "8")
                 self.button_Bordes = customtkinter.CTkButton(self.k_means_frame, text="Bordes",font=("PT Bold Heading",12), width=200,height=40, command= lambda: self.segm_border("K-means"))
                 self.button = customtkinter.CTkButton(self.k_means_frame, text="Segmentate",font=("PT Bold Heading",12), width=200,height=40, command= lambda: self.segm("K-means"))
-                
+                self.k_means_frame_LIt = tk.Label(self.k_means_frame, text="Iterations", fg="white", bg="#000000", font=self.bigFont2)
+                self.k_means_frame_It = tk.Entry(self.k_means_frame,justify="center", fg="white", bg="#000000")
+                self.k_means_frame_It.insert(0, "5")
                 
                 # self.k_means_frame_btn = tk.Button(self.k_means_frame, image=self.k_means_frame_img_boton2, bg="#000000", borderwidth=0, command= lambda: self.segm("K-means"))
                 self.k_means_frame.pack()
                 self.k_means_frame.place(x=690,y=320, width=300, height=400) 
                 # self.k_means_frame_btn.place(x=220, y= 20)
-                
+                self.k_means_frame_It.place(x=90, y=0, width=100, height=25)
+                self.k_means_frame_LIt.place(x=10, y=0)
                 self.k_means_frame_entryK.place(x=90, y=40, width=100, height=25)
                 self.k_means_frame_l_k.place(x=10, y=40)
                 self.button_Bordes.place(x=20, y=150)
@@ -137,7 +148,7 @@ class Segmentation():
                 self.k_means_frame.lift()
         elif self.segmentation_method.get()=="Region Growing":
             if self.k_means_frame is not None:
-                widgets = [self.k_means_frame_entryK, self.k_means_frame_l_k,self.button_Bordes,self.button]
+                widgets = [self.k_means_frame_entryK, self.k_means_frame_l_k,self.button_Bordes,self.button,self.k_means_frame_LIt,self.k_means_frame_It]
                 for widget in widgets:
                     widget.destroy()
                 self.k_means_frame.destroy()
@@ -154,7 +165,7 @@ class Segmentation():
                 
                 self.regionGrowing_frame_l_tol = tk.Label(self.regionGrowing_frame, text="Tolerance", fg="white", bg="#000000", font=self.bigFont2)
                 self.regionGrowing_frame_entryTolerance = tk.Entry(self.regionGrowing_frame,justify="center", fg="white", bg="#000000")
-                self.regionGrowing_frame_entryTolerance.insert(0, "1")
+                self.regionGrowing_frame_entryTolerance.insert(0, "50")
                 # self.regionGrowing_frame_btn = tk.Button(self.regionGrowing_frame, image=self.regionGrowing_frame_img_boton2, bg="#000000", borderwidth=0, command= lambda: self.segm("Region Growing"))
                 self.button_Bordes = customtkinter.CTkButton(self.regionGrowing_frame, text="Bordes",font=("PT Bold Heading",12), width=200,height=40, command= lambda: self.segm_border("Region Growing"))
                 self.button = customtkinter.CTkButton(self.regionGrowing_frame, text="Segmentate",font=("PT Bold Heading",12), width=200,height=40, command= lambda: self.segm("Region Growing"))
@@ -168,7 +179,10 @@ class Segmentation():
                 self.button_Bordes.place(x=20, y=150)
             else:
                 self.regionGrowing_frame.lift()     
-             
+        elif self.segmentation_method.get()=="Gaussian mixture":  
+            self.data_segmented=gaussianMixture(self.data)
+            self.plotAx()
+
                 
     def segm(self, type):
          if type=="Thresholdind":
@@ -177,12 +191,13 @@ class Segmentation():
             self.plotAx()
             
          if type=="K-means":
-            
-            self.data_segmented=k_means(self.data, int(self.k_means_frame_entryK.get()))
+            self.data_segmented=Z_score(self.data)
+            self.data_segmented=Median_filter(self.data_segmented)
+            self.data_segmented=k_means(self.data_segmented, int(self.k_means_frame_entryK.get()),int(self.k_means_frame_It.get()))
         
             self.plotAx()
          if type=="Region Growing":
-            self.data_segmented=RegionGrowing(self.data,int(self.regionGrowing_frame_entryTolerance.get()))
+            self.data_segmented=RegionGrowing(self.data,100,100,20,int(self.regionGrowing_frame_entryTolerance.get()))
         
             self.plotAx() 
     def segm_border(self, type):

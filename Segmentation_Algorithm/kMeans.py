@@ -2,11 +2,11 @@
 import numpy as np
 
 
-def k_means(image, k):
+def k_means(image, k,iterations):
     # Initialize the centroids
     centroids = np.linspace(np.amin(image), np.amax(image), num=k)
     
-    for i in range(3):
+    for i in range(iterations):
         # Compute the distances from each point to each centroid
         distances = np.abs(image[..., np.newaxis] - centroids)
         
