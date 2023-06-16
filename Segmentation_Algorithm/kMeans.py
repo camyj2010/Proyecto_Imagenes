@@ -18,3 +18,17 @@ def k_means(image, k,iterations):
             centroids[group] = image[segmentation == group].mean()
     
     return segmentation
+# def k_means(image, ks,iteracion):
+        
+#         # Inicialización de valores k
+#         k_values = np.linspace(np.amin(image), np.amax(image), ks)
+#         for i in range(iteracion):
+#             d_values = [np.abs(k - image) for k in k_values]
+#             segmentationr = np.argmin(d_values, axis=0)
+
+#             for k_idx in range(ks):
+#                 k_values[k_idx] = np.mean(image[segmentationr == k_idx])
+
+#         return segmentationr
+
+

@@ -205,28 +205,28 @@ class Standarization():
     def plotAx(self, *args ):
             self.canvas.delete("all")
             if (self.Axis.get()=="select"):
-                 self.ax.imshow(self.data_standardized[:,:,30])
+                 self.ax.imshow(self.data_standardized[:,:,30], cmap="gray")
             else:
                 if(self.Axis.get()=="x"):
                     self.ax_x=int(self.var_ax.get())
                     self.ax_y=-1
                     self.ax_z=-1
-                    self.ax.imshow(self.data_standardized[self.ax_x,:,:])
+                    self.ax.imshow(self.data_standardized[self.ax_x,:,:], cmap="gray")
                     
             
                 if(self.Axis.get()=="y"):
                     self.ax_x=-1
                     self.ax_y=int(self.var_ax.get())
                     self.ax_z=-1
-                    self.ax.imshow(self.data_standardized[:,self.ax_y,:])
+                    self.ax.imshow(self.data_standardized[:,self.ax_y,:], cmap="gray")
                     
                 if(self.Axis.get()=="z"):
                     self.ax_x=-1
                     self.ax_y=-1
                     self.ax_z=int(self.var_ax.get())
-                    self.ax.imshow(self.data_standardized[:,:,self.ax_z])
+                    self.ax.imshow(self.data_standardized[:,:,self.ax_z], cmap="gray")
 
-            
+            self.ax.set_aspect("auto",adjustable="box")
             self.canvas_widget.draw() 
          
     

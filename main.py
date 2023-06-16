@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg 
 from standarization import Standarization
 from segmentation import Segmentation
-
+from registration import Registration
 import customtkinter
 
 
@@ -63,7 +63,7 @@ class Main():
         self.Axis.set("select") # default value
         
         #ax_menu = tk.OptionMenu(self.window, self.Axis, *self.ax_list,command=self.display_selected)
-        boton = tk.Button(self.window,image=img_boton, command=self.open_file,bg = "#000000",borderwidth=0)
+        boton = tk.Button(self.window,image=img_boton, command=self.load_images,bg = "#000000",borderwidth=0)
         boton1 = tk.Button(self.window,image=img_select, command=self.select_file,bg = "#000000",borderwidth=0)
         
 
@@ -77,8 +77,8 @@ class Main():
         
         #Botones de los pasos 
         button_Standarization = customtkinter.CTkButton(self.window, text="Pre-Processing ",font=("PT Bold Heading",12), width=200,height=40, command=self.button_event)
-        button_Segmentation = customtkinter.CTkButton(self.window, text="Processing ",font=("PT Bold Heading",12), width=200,height=40, command=self.button_segmentation)
-        button_PosgtSegmentation = customtkinter.CTkButton(self.window, text="Post Processing ",font=("PT Bold Heading",12), width=200,height=40, command=self.button_post)
+        button_Segmentation = customtkinter.CTkButton(self.window, text="Segmentation",font=("PT Bold Heading",12), width=200,height=40, command=self.button_segmentation)
+        button_PosgtSegmentation = customtkinter.CTkButton(self.window, text="Register",font=("PT Bold Heading",12), width=200,height=40, command=self.button_post)
         button_Standarization.place(x=50, y=220)
         button_Segmentation.place(x=50,y=270)
         button_PosgtSegmentation.place(x=50,y=320)
@@ -89,6 +89,9 @@ class Main():
         self.Ax_x= -1
         self.Ax_y= -1
         self.Ax_z= -1
+        self.registration=FALSE
+        self.segmentation=FALSE
+        self.standarization=FALSE
         self.window.mainloop()
 
     
@@ -96,50 +99,98 @@ class Main():
             if(self.file_path==""):
                 messagebox.showerror(message="No image loaded", title="ERROR")
             else:
+                self.registration=FALSE
+                self.segmentation=FALSE
+                self.standarization=TRUE
                 Standarization(self.window, self.data,self.Ax_x,self.Ax_y, self.Ax_z, self.bigFont2,self.canvas,self.ax,self.canvas_widget,self.Axis,self.ax_list,self.image_name)
 
     def button_segmentation(self):
             if(self.file_path==""):
                 messagebox.showerror(message="No image loaded", title="ERROR")
             else:
+                self.registration=FALSE
+                self.segmentation=TRUE
+                self.standarization=FALSE
                 Segmentation(self.window, self.data,self.Ax_x,self.Ax_y, self.Ax_z, self.bigFont2,self.canvas,self.ax,self.canvas_widget,self.Axis,self.ax_list)
             
     def button_post(self):
-         messagebox.showerror(message="No yet", title="ERROR")
+        if(self.file_path==""):
+            messagebox.showerror(message="No image loaded", title="ERROR")
+        else:
+            self.registration=TRUE
+            self.segmentation=FALSE
+            self.standarization=FALSE
+            Registration(self.window, self.data,self.Ax_x,self.Ax_y, self.Ax_z, self.bigFont2,self.canvas,self.ax,self.canvas_widget,self.Axis,self.ax_list,self.image_name,self.file_path,self.bigFont1)
 
                  
-    def open_file(self):
+    # def open_file(self):
 
-        # Obtener la ruta del archivo seleccionado
-        self.file_path = filedialog.askopenfilename()
-        self.image_name = os.path.basename(self.file_path)
-        # print(self.image_name)
-        # Cargar la imagen nii utilizando nibabel
-        self.img = nib.load(self.file_path)
-        self.data = self.img.get_fdata()
+    #     # Obtener la ruta del archivo seleccionado
+    #     self.file_path = filedialog.askopenfilename()
+    #     self.image_name = os.path.basename(self.file_path)
+    #     # print(self.image_name)
+    #     # Cargar la imagen nii utilizando nibabel
+    #     self.img = nib.load(self.file_path)
+    #     self.data = self.img.get_fdata()
 
-        folder_path = "Patient/"
-        destination_path = os.path.join(folder_path, self.image_name)
-        shutil.copyfile(self.file_path, destination_path)
+    #     folder_path = "Patient/"
+    #     destination_path = os.path.join(folder_path, self.image_name)
+    #     shutil.copyfile(self.file_path, destination_path)
 
-        self.init_plot()
+    #     self.init_plot()
+    def load_images(self):
+        # Obtener las rutas de los archivos seleccionados
+        file_paths = filedialog.askopenfilenames()
+        self.num_images = 0
+        for file_path in file_paths:
+            # Obtener el nombre de la imagen
+            image_name = os.path.basename(file_path)
+            # Cargar la imagen nii utilizando nibabel
+            img = nib.load(file_path)
+            data = img.get_fdata()
+
+            folder_path = "Patient/"
+            destination_path = os.path.join(folder_path, image_name)
+            shutil.copyfile(file_path, destination_path)
+            self.num_images += 1
         # Mostrar la imagen en un lienzo
-    def select_file(self):
-        messagebox.showerror(message="No yet", title="ERROR")
 
+    def select_file(self):
+        # Obtener la ruta de la carpeta "Patient"
+        folder_path = "Patient/"
+        # Abrir la carpeta "Patient"
+        root = Tk()
+        root.withdraw()
+        self.file_path = filedialog.askopenfilename(initialdir=folder_path)
+
+        if self.file_path:
+                # Obtener la ruta del archivo seleccionado
+            self.image_name = os.path.basename(self.file_path)
+            # Cargar la imagen nii utilizando nibabel
+            self.img = nib.load(self.file_path)
+            self.data = self.img.get_fdata()
+
+            # Aquí puedes hacer algo con la imagen cargada, como mostrarla o procesarla
+            self.init_plot()
 
     def init_plot(self):
         self.canvas.delete("all")
         # Crear una figura y un objeto de plot
         self.fig, self.ax = plt.subplots()
         # Mostrar la imagen en el plot
-        self.ax.imshow(self.data[:,:,30])
-        
+        self.ax.imshow(self.data[:,:,30], cmap="gray")
+        self.ax.set_aspect("auto",adjustable="box")
         #    Convertir la figura en un widget de Tkinter y mostrarla en el canvas
         self.canvas_widget = FigureCanvasTkAgg(self.fig, self.canvas)
         self.canvas_widget.draw()
         self.canvas_widget.get_tk_widget().place( x=0, y=0,width=380, height=380)
-        # Standarization(self.window, self.data,self.Ax_x,self.Ax_y, self.Ax_z, self.bigFont2,self.canvas,self.ax,self.canvas_widget,self.Axis,self.ax_list,self.image_name)
+        if(self.standarization==TRUE):
+            Standarization(self.window, self.data,self.Ax_x,self.Ax_y, self.Ax_z, self.bigFont2,self.canvas,self.ax,self.canvas_widget,self.Axis,self.ax_list,self.image_name)
+        if(self.segmentation==TRUE):
+            Segmentation(self.window, self.data,self.Ax_x,self.Ax_y, self.Ax_z, self.bigFont2,self.canvas,self.ax,self.canvas_widget,self.Axis,self.ax_list)
+        if(self.registration==TRUE):    
+            Registration(self.window, self.data,self.Ax_x,self.Ax_y, self.Ax_z, self.bigFont2,self.canvas,self.ax,self.canvas_widget,self.Axis,self.ax_list,self.image_name,self.file_path,self.bigFont1)
+
     # def display_selected(self, *args):
     #     if(self.file_path==""):
     #         messagebox.showerror(message="No image loaded", title="ERROR")
