@@ -187,7 +187,7 @@ class Segmentation():
                 
     def segm(self, type):
          if type=="Thresholdind":
-            self.data_segmented=Z_score(self.data)
+            # self.data_segmented=Z_score(self.data)
             self.data_segmented=thres(self.data_segmented,float(self.thresholdind_frame_entryTolerance.get()), float(self.thresholdind_frame_entryTao.get()))
             self.plotAx()
             
@@ -197,7 +197,7 @@ class Segmentation():
         
             self.plotAx()
          if type=="Region Growing":
-            self.data_segmented=Z_score(self.data)
+            # self.data_segmented=Z_score(self.data)
             self.data_segmented=RegionGrowing(self.data_segmented,100,100,20,int(self.regionGrowing_frame_entryTolerance.get()))
         
             self.plotAx() 

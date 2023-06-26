@@ -120,9 +120,9 @@ class Registration():
         
         if((self.image_name=="T1.nii.gz")or (self.image_name=="T1.nii") ):
             
-            segmentate = k_means(image, 4, 10)
+            segmentate = k_means(image, 3, 15)
         if((self.image_name=="IR.nii.gz")or (self.image_name=="IR.nii") ):
-             segmentate=k_means(image,2, 10)
+             segmentate=k_means(image,2, 15)
         print("4")
         
 

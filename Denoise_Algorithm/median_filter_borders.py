@@ -38,36 +38,6 @@ import numpy as np
 def Median_filter_borders(image, tol=50, tau=0.5):
     filtered_image = np.zeros_like(image)
 
-    # # Calculate tau
-    # while True:
-    #     # Update the threshold using ISODATA algorithm
-    #     segmentation = image >= tau
-
-    #     # Background
-    #     mBG = image[segmentation == False]
-    #     if len(mBG) > 0:
-    #         mBG = np.nan_to_num(mBG, nan=0)
-    #         mBG = mBG.mean()
-    #     else:
-    #         mBG = 0
-
-    #     # Foreground
-    #     mFG = image[segmentation]
-    #     if len(mFG) > 0:
-    #         mFG = np.nan_to_num(mFG, nan=0)
-    #         mFG = mFG.mean()
-    #     else:
-    #         mFG = 0
-
-    #     # Update tau
-    #     tau_post = 0.5 * (mBG + mFG)
-
-    #     # Check if accepts the tolerance, if not, continue iterating
-    #     if np.abs(tau - tau_post) < tol:
-    #         break
-    #     else:
-    #         tau = tau_post
-
     for x in range(1, image.shape[0] - 2):
         for y in range(1, image.shape[1] - 2):
             for z in range(1, image.shape[2] - 2):
